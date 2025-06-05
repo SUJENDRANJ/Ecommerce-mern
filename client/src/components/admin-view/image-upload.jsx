@@ -6,8 +6,7 @@ import { Button } from "../ui/button";
 import axios from "axios";
 import { Skeleton } from "../ui/skeleton";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 
 function ProductImageUpload({
   imageFile,
@@ -21,18 +20,21 @@ function ProductImageUpload({
 }) {
   const inputRef = useRef(null);
 
+  console.log(isEditMode, "isEditMode");
+
   function handleImageFileChange(event) {
+    console.log(event.target.files, "event.target.files");
     const selectedFile = event.target.files?.[0];
+    console.log(selectedFile);
+
     if (selectedFile) setImageFile(selectedFile);
   }
 
   function handleDragOver(event) {
-    if (isEditMode) return; // disable drag/drop in edit mode
     event.preventDefault();
   }
 
   function handleDrop(event) {
-    if (isEditMode) return; // disable drag/drop in edit mode
     event.preventDefault();
     const droppedFile = event.dataTransfer.files?.[0];
     if (droppedFile) setImageFile(droppedFile);
@@ -47,36 +49,28 @@ function ProductImageUpload({
 
   async function uploadImageToCloudinary() {
     setImageLoadingState(true);
-    try {
-      const data = new FormData();
-      data.append("my_file", imageFile);
-      const response = await axios.post(
-        `${API_BASE_URL}/api/admin/products/upload-image`,
-        data
-      );
+    const data = new FormData();
+    data.append("my_file", imageFile);
+    const response = await axios.post(
+      `${BASE_URL}/api/admin/products/upload-image`,
+      data
+    );
+    console.log(response, "response");
 
-      if (response?.data?.success) {
-        setUploadedImageUrl(response.data.result.url);
-      } else {
-        // handle unexpected response structure
-        alert("Failed to upload image. Please try again.");
-      }
-    } catch (error) {
-      console.error("Image upload error:", error);
-      alert("Image upload failed. Please check your connection or try again.");
-    } finally {
+    if (response?.data?.success) {
+      setUploadedImageUrl(response.data.result.url);
       setImageLoadingState(false);
     }
   }
 
   useEffect(() => {
-    if (imageFile !== null) {
-      uploadImageToCloudinary();
-    }
+    if (imageFile !== null) uploadImageToCloudinary();
   }, [imageFile]);
 
   return (
-    <div className={`w-full mt-4 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}>
+    <div
+      className={`w-full  mt-4 ${isCustomStyling ? "" : "max-w-md mx-auto"}`}
+    >
       <Label className="text-lg font-semibold mb-2 block">Upload Image</Label>
       <div
         onDragOver={handleDragOver}
@@ -91,14 +85,14 @@ function ProductImageUpload({
           className="hidden"
           ref={inputRef}
           onChange={handleImageFileChange}
-          disabled={isEditMode || imageLoadingState}
+          disabled={isEditMode}
         />
         {!imageFile ? (
           <Label
             htmlFor="image-upload"
             className={`${
-              isEditMode ? "cursor-not-allowed" : "cursor-pointer"
-            } flex flex-col items-center justify-center h-32`}
+              isEditMode ? "cursor-not-allowed" : ""
+            } flex flex-col items-center justify-center h-32 cursor-pointer`}
           >
             <UploadCloudIcon className="w-10 h-10 text-muted-foreground mb-2" />
             <span>Drag & drop or click to upload image</span>
@@ -116,7 +110,6 @@ function ProductImageUpload({
               size="icon"
               className="text-muted-foreground hover:text-foreground"
               onClick={handleRemoveImage}
-              disabled={imageLoadingState}
             >
               <XIcon className="w-4 h-4" />
               <span className="sr-only">Remove File</span>
