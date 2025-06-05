@@ -12,6 +12,7 @@ const initialState = {
   errorMessage: "",
 };
 
+// Fetch filtered products list
 export const fetchAllFilteredProducts = createAsyncThunk(
   "products/fetchAllFilteredProducts",
   async ({ filterParams, sortParams }, thunkAPI) => {
@@ -24,7 +25,6 @@ export const fetchAllFilteredProducts = createAsyncThunk(
       const result = await axios.get(
         `${API_BASE_URL}/api/shop/products/get?${query}`
       );
-
       return result.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(
@@ -36,6 +36,7 @@ export const fetchAllFilteredProducts = createAsyncThunk(
   }
 );
 
+// Fetch single product details
 export const fetchProductDetails = createAsyncThunk(
   "products/fetchProductDetails",
   async (id, thunkAPI) => {
@@ -54,10 +55,16 @@ export const fetchProductDetails = createAsyncThunk(
   }
 );
 
+// Slice definition
 const shoppingProductSlice = createSlice({
   name: "shoppingProducts",
   initialState,
   reducers: {
+    // This sets productDetails manually via payload
+    setProductDetails: (state, action) => {
+      state.productDetails = action.payload;
+    },
+    // Optional: Clear product details entirely
     clearProductDetails: (state) => {
       state.productDetails = null;
       state.isError = false;
@@ -81,7 +88,6 @@ const shoppingProductSlice = createSlice({
         state.errorMessage = action.payload || action.error.message;
         state.productList = [];
       })
-
       .addCase(fetchProductDetails.pending, (state) => {
         state.isLoading = true;
         state.isError = false;
@@ -100,6 +106,7 @@ const shoppingProductSlice = createSlice({
   },
 });
 
-export const { clearProductDetails } = shoppingProductSlice.actions;
-
+// Export actions and reducer
+export const { setProductDetails, clearProductDetails } =
+  shoppingProductSlice.actions;
 export default shoppingProductSlice.reducer;
