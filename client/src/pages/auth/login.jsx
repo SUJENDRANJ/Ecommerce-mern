@@ -26,7 +26,7 @@ function AuthLogin() {
         });
       } else {
         toast({
-          title: data?.payload?.message,
+          title: data?.payload?.message || "Login failed",
           variant: "destructive",
         });
       }
