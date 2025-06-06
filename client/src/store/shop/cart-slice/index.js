@@ -2,7 +2,8 @@ import axios from "axios";
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
 // Use environment variable or fallback to localhost
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const BASE_URL =
+  "https://ecommerce-mern-khr6.onrender.com" || "http://localhost:5000";
 
 const initialState = {
   cartItems: [],

@@ -6,7 +6,8 @@ import { Button } from "../ui/button";
 import axios from "axios";
 import { Skeleton } from "../ui/skeleton";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+const BASE_URL =
+  "https://ecommerce-mern-khr6.onrender.com" || "http://localhost:5000";
 
 function ProductImageUpload({
   imageFile,
